@@ -1309,207 +1309,214 @@ def iRobotTelemetry(dashboard):
                 dashboard.map_place_piece("irobot", dashboard.irobot_posn[1],dashboard.irobot_posn[0])
                 dashboard.map_place_piece("goal", dashboard.goal_posn[1],dashboard.goal_posn[0])
 
-                dashboard.comms_check(-1)
-                dashboard.master.update()
+            dashboard.comms_check(-1)
+            dashboard.master.update()
 
-                bot = create2api.Create2()
-                bot.digit_led_ascii(' ')  # clear DSEG before Passive mode
-                print "Issuing a Start()"
-                bot.start()  # issue passive mode command
-                bot.safe()
-                dist = 0  # reset odometer
+            bot = create2api.Create2()
+            bot.digit_led_ascii('    ')  # clear DSEG before Passive mode
+            print "Issuing a Start()"
+            bot.start()  # issue passive mode command
+            bot.safe()
+            dist = 0  # reset odometer
 
-                while True and not dashboard.exitflag:
+            while True and not dashboard.exitflag:
 
-                    try:
-                        # this binding will cause a map refresh if the user interactively changes the window size
-                        dashboard.master.bind('<Configure>', dashboard.on_map_refresh)
-                        floorplan = WavefrontMachine(dashboard.floormap, dashboard.irobot_posn, dashboard.goal_posn, False)
-                        # check if serial is communicating
-                        time.sleep(0.25)
+                try:
+                    # this binding will cause a map refresh if the user interactively changes the window size
+                    dashboard.master.bind('<Configure>', dashboard.on_map_refresh)
+                    floorplan = WavefrontMachine(dashboard.floormap, dashboard.irobot_posn, dashboard.goal_posn, False)
+                    # check if serial is communicating
+                    time.sleep(0.25)
 
-                        if timelimit(1, bot.get_packet, (100,), {}) == False:  # run bot.get_packet(100) with a timeout
-                            print "Data link down"
-                            dashboard.btnStart.configure(state=DISABLED)
+                    if timelimit(1, bot.get_packet, (100,), {}) == False:  # run bot.get_packet(100) with a timeout
+                        print "Data link down"
+                        dashboard.btnStart.configure(state=DISABLED)
+                        dashboard.comms_check(0)
+                        bot.destroy()
+                        break
+                    else:
+                        # DATA LINK
+                        if dashboard.dataconn.get() == True:
+                            print "Data link up"
+                            dashboard.dataconn.set(False)
+                        if dashboard.dataretry.get() == True:  # retry an unstable (green) connection
+                            print "Data link reconnect"
+                            dashboard.dataretry.set(False)
+                            dashboard.dataconn.set(True)
                             dashboard.comms_check(0)
                             bot.destroy()
                             break
+                        if dashboard.rbcomms.cget('state') == "normal":  # flash radio button
+                            dashboard.comms_check(-1)
                         else:
-                            # DATA LINK
-                            if dashboard.dataconn.get() == True:
-                                print "Data link up"
-                                dashboard.dataconn.set(False)
-                            if dashboard.dataretry.get() == True:  # retry an unstable (green) connection
-                                print "Data link reconnect"
-                                dashboard.dataretry.set(False)
-                                dashboard.dataconn.set(True)
-                                dashboard.comms_check(0)
-                                bot.destroy()
-                                break
-                            if dashboard.rbcomms.cget('state') == "normal":  # flash radio button
-                                dashboard.comms_check(-1)
-                            else:
-                                dashboard.comms_check(1)
-                            # WAVEFRONT
-                            current_date = time.strftime("%Y %m %d")
-                            schedule_time = datetime.datetime.strptime("%s %s" % (current_date,dashboard.tschedule.get()), "%Y %m %d %H:%M")
-                            week_day = datetime.datetime.strptime("%s %s" % (current_date, dashboard.tschedule.get()), "%Y %m %d %H:%M").strftime('%A')
-                            days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-                            if dashboard.dschedule.get() == "Mon-Sun":
-                                schedule_day = True
-                            elif dashboard.dschedule.get() == "Mon-Fri" and week_day in days:
-                                schedule_day = True
-                            elif dashboard.dschedule.get() == "Sat-Sun" and week_day not in days:
-                                schedule_day = True
-                            else:
-                                schedule_day = False
+                            dashboard.comms_check(1)
+                        # WAVEFRONT
+                        current_date = time.strftime("%Y %m %d")
+                        schedule_time = datetime.datetime.strptime("%s %s" % (current_date,dashboard.tschedule.get()), "%Y %m %d %H:%M")
+                        week_day = datetime.datetime.strptime("%s %s" % (current_date, dashboard.tschedule.get()), "%Y %m %d %H:%M").strftime('%A')
+                        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+                        if dashboard.dschedule.get() == "Mon-Sun":
+                            schedule_day = True
+                        elif dashboard.dschedule.get() == "Mon-Fri" and week_day in days:
+                            schedule_day = True
+                        elif dashboard.dschedule.get() == "Sat-Sun" and week_day not in days:
+                            schedule_day = True
+                        else:
+                            schedule_day = False
 
-                            if dashboard.rundemo:
-                                print "Running Wavefront Demo"
-                                floorplan.run(dashboard, bot, return_path=False, prnt=True,demo=True)
-                                if dashboard.return_to_base.get() == True:
-                                    print 'Reversing path'
-                                    floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)
-                                    # swap irobot and goal locations
-                                    dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
-                                    dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
-                                    floorplan.run(dashboard, bot, return_path=True, prnt=True, demo=True)
-                                dashboard.rundemo = False
-                                dashboard.map_place_piece("irobot", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
-                                dashboard.map_place_piece("goal", dashboard.goal_posn[1], dashboard.goal_posn[0])
-                            elif dashboard.runwavefront:
+                        if dashboard.rundemo:
+                            print "Running Wavefront Demo"
+                            floorplan.run(dashboard, bot, return_path=False, prnt=True,demo=True)
+                            if dashboard.return_to_base.get() == True:
+                                print 'Reversing path'
+                                floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)
+                                # swap irobot and goal locations
+                                dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
+                                dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
+                                floorplan.run(dashboard, bot, return_path=True, prnt=True, demo=True)
+                            dashboard.rundemo = False
+                            dashboard.map_place_piece("irobot", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
+                            dashboard.map_place_piece("goal", dashboard.goal_posn[1], dashboard.goal_posn[0])
+                        elif dashboard.runwavefront:
+                            print "Running Wavefront"
+                            floorplan.run(dashboard, bot, return_path=False, prnt=False, demo=False, alarm=True)
+
+                            if dashboard.return_to_base.get() == True:
+                                print 'Reversing path'
+                                floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)
+                                # swap irobot and goal locations
+                                dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
+                                dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
+                                floorplan.run(dashboard, bot, return_path=True, prnt=False, demo=False, alarm=False)
+                            dashboard.runwavefront = False
+                            dashboard.on_press_start()
+                        elif (datetime.datetime.now() > schedule_time and datetime.datetime.now() < schedule_time + datetime.timedelta(minutes=0.2)) and dashboard.schedule.get() == True and schedule_day:
+                            if bot.sensor_state['oi mode'] != create_dict["SAFE"]:
+                                dashboard.chgmode.set('Safe')
+                            else:
+                                dashboard.mode.set("Safe")
+                                dashboard.on_press_start()
                                 print "Running Wavefront"
                                 floorplan.run(dashboard, bot, return_path=False, prnt=False, demo=False, alarm=True)
-
                                 if dashboard.return_to_base.get() == True:
                                     print 'Reversing path'
-                                    floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)
-                                    # swap irobot and goal locations
+                                    floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)  # swap irobot and goal locations
                                     dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
                                     dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
                                     floorplan.run(dashboard, bot, return_path=True, prnt=False, demo=False, alarm=False)
                                 dashboard.runwavefront = False
                                 dashboard.on_press_start()
-                            elif (datetime.datetime.now() > schedule_time and datetime.datetime.now() < schedule_time + datetime.timedelta(minutes=0.2)) and dashboard.schedule.get() == True and schedule_day:
-                                if bot.sensor_state['oi mode'] != create_dict["SAFE"]:
-                                    dashboard.chgmode.set('Safe')
-                                else:
-                                    dashboard.mode.set("Safe")
-                                    dashboard.on_press_start()
-                                    print "Running Wavefront"
-                                    floorplan.run(dashboard, bot, return_path=False, prnt=False, demo=False, alarm=True)
-                                    if dashboard.return_to_base.get() == True:
-                                        print 'Reversing path'
-                                        floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)  # swap irobot and goal locations
-                                        dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
-                                        dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
-                                        floorplan.run(dashboard, bot, return_path=True, prnt=False, demo=False, alarm=False)
-                                    dashboard.runwavefront = False
-                                    dashboard.on_press_start()
-                                    dashboard.on_press_start()
-                            # SLEEP PREVENTION
-                            # set BRC pin HIGH
-                            # GPIO.output(17, GPIO.HIGH)
+                                dashboard.on_press_start()
+                        # SLEEP PREVENTION
+                        # set BRC pin HIGH
+                        # GPIO.output(17, GPIO.HIGH)
 
-                            # command a 'Dock' button press (while docked) every 30 secs to prevent Create2 sleep(BRC pin pulse not working for me)
-                            # pulse BRC pin LOW every 30 secs to prevent Create2 sleep when undocked
-                            if datetime.datetime.now() > BtnTimer:
-                                # GPIO.output(17, GPIO.LOW)
-                                print 'BRC pin pulse'
-                                BtnTimer = datetime.datetime.now() + datetime.timedelta(seconds=30)
-                                if dashboard.docked:
-                                    print 'Docked at %s' % time.asctime(time.localtime(time.time()))
-                                    bot.buttons(4)  # 1=Clean 2=Spot 4=Dock 8=Minute 16=Hour 32=Day 64 = Schedule 128 = Clock
-                                elif bot.sensor_state['oi mode'] == create_dict["PASSIVE"] and dashboard.chgmode.get() != 'Seek Dock':
-                                    # switch to safe mode if detects OI mode is Passive
-                                    dashboard.chgmode.set('Safe')
-                            # OI MODE
-                            if bot.sensor_state['oi mode'] == create_dict["PASSIVE"]:
-                                dashboard.mode.set("Passive")
-                            elif bot.sensor_state['oi mode'] == create_dict["SAFE"]:
-                                dashboard.mode.set("Safe")
-                            elif bot.sensor_state['oi mode'] == create_dict["FULL"]:
-                                dashboard.mode.set("Full")
+                        # command a 'Dock' button press (while docked) every 30 secs to prevent Create2 sleep(BRC pin pulse not working for me)
+                        # pulse BRC pin LOW every 30 secs to prevent Create2 sleep when undocked
+                        if datetime.datetime.now() > BtnTimer:
+                            # GPIO.output(17, GPIO.LOW)
+                            print 'BRC pin pulse 1'
+                            BtnTimer = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                            if dashboard.docked:
+                                print 'Docked at %s' % time.asctime(time.localtime(time.time()))
+                                bot.buttons(4)  # 1=Clean 2=Spot 4=Dock 8=Minute 16=Hour 32=Day 64 = Schedule 128 = Clock
+                            elif bot.sensor_state['oi mode'] == create_dict["PASSIVE"] and dashboard.chgmode.get() != 'Seek Dock':
+                                # switch to safe mode if detects OI mode is Passive
+                                dashboard.chgmode.set('Safe')
+                        # print 'BRC pin pulse 1426'
+                        # OI MODE
+                        if bot.sensor_state['oi mode'] == create_dict["PASSIVE"]:
+                            dashboard.mode.set("Passive")
+                        elif bot.sensor_state['oi mode'] == create_dict["SAFE"]:
+                            dashboard.mode.set("Safe")
+                        elif bot.sensor_state['oi mode'] == create_dict["FULL"]:
+                            dashboard.mode.set("Full")
+                        else:
+                            dashboard.mode.set("")
+
+                        # print 'BRC pin pulse 2'
+
+
+                        if bot.sensor_state['oi mode'] == create_dict["PASSIVE"]:
+                            dashboard.btnStart.configure(state=DISABLED)
+                        else:
+                            dashboard.btnStart.configure(state=NORMAL)
+
+                        # print 'BRC pin pulse 3'
+                        if dashboard.modeflag.get() == True:
+                            if dashboard.chgmode.get() == 'Passive':
+                                bot.digit_led_ascii('    ')  # clear DSEG before Passive mode
+                                bot.start()
+                            elif dashboard.chgmode.get() == 'Safe':
+                                bot.safe()
+                                bot.play_note('C#4', 8)
+                            elif dashboard.chgmode.get() == 'Full':
+                                bot.full()
+                                bot.play_note('G#4', 8)
+                            elif dashboard.chgmode.get() == 'Seek Dock':
+                                bot.digit_led_ascii('DOCK')  # clear DSEG before Passive mode
+                                bot.start()
+                                bot.seek_dock()
+                            dashboard.modeflag.set(False)
+
+                        # print 'BRC pin pulse 4'
+                        # BATTERY
+                        if bot.sensor_state['charging state'] == create_dict["NOT CHARGING"]:
+                            battcharging = False
+                        elif bot.sensor_state['charging state'] == create_dict["RECONDITIONING"]:
+                            # dashboard.docked = True
+                            battcharging = True
+                        elif bot.sensor_state['charging state'] == create_dict["FULL CHARGING"]:
+                            # dashboard.docked = True
+                            battcharging = True
+                        elif bot.sensor_state['charging state'] == create_dict["TRICKLE CHARGING"]:
+                            # dashboard.docked = True
+                            battcharging = True
+                        elif bot.sensor_state['charging state'] == create_dict["WAITING"]:
+                            battcharging = False
+                        elif bot.sensor_state['charging state'] == create_dict["CHARGE FAULT"]:
+                            battcharging = False
+
+                        if bot.sensor_state['charging sources available']['home base']:
+                            dashboard.docked = True
+                            dashboard.powersource.set('Home Base')
+                        else:
+                            dashboard.docked = False
+                            dashboard.powersource.set('Battery')
+
+                        # print 'BRC pin pulse 5'
+                        # DRIVE
+                        if dashboard.driven.get() == 'Button':
+                            if dashboard.driveforward == True:
+                                bot.drive(int(dashboard.speed.get()), 32767)
+                            elif dashboard.drivebackward == True:
+                                bot.drive(int(dashboard.speed.get()) * -1, 32767)
+                            elif dashboard.driveleft == True:
+                                bot.drive(int(dashboard.speed.get()), 1)
+                            elif dashboard.driveright == True:
+                                bot.drive(int(dashboard.speed.get()), -1)
                             else:
-                                dashboard.mode.set("")
-
-                            if bot.sensor_state['oi mode'] == create_dict["PASSIVE"]:
-                                dashboard.btnStart.configure(state=DISABLED)
+                                bot.drive(0, 32767)
+                        else:
+                            if dashboard.leftbuttonclick.get() == True:
+                                bot.drive(dashboard.commandvelocity, dashboard.commandradius)
                             else:
-                                dashboard.btnStart.configure(state=NORMAL)
+                                bot.drive(0, 32767)
+                        if abs(bot.sensor_state['distance']) > 5: dashboard.docked = False
 
-                            if dashboard.modeflag.get() == True:
-                                if dashboard.chgmode.get() == 'Passive':
-                                    bot.digit_led_ascii(' ')  # clear DSEG before Passive mode
-                                    bot.start()
-                                elif dashboard.chgmode.get() == 'Safe':
-                                    bot.safe()
-                                    bot.play_note('C#4', 8)
-                                elif dashboard.chgmode.get() == 'Full':
-                                    bot.full()
-                                    bot.play_note('G#4', 8)
-                                elif dashboard.chgmode.get() == 'Seek Dock':
-                                    bot.digit_led_ascii('DOCK')  # clear DSEG before Passive mode
-                                    bot.start()
-                                    bot.seek_dock()
-                                dashboard.modeflag.set(False)
+                        dist = dist + abs(bot.sensor_state['distance'])
 
-                            # BATTERY
-                            if bot.sensor_state['charging state'] == create_dict["NOT CHARGING"]:
-                                battcharging = False
-                            elif bot.sensor_state['charging state'] == create_dict["RECONDITIONING"]:
-                                # dashboard.docked = True
-                                battcharging = True
-                            elif bot.sensor_state['charging state'] == create_dict["FULL CHARGING"]:
-                                # dashboard.docked = True
-                                battcharging = True
-                            elif bot.sensor_state['charging state'] == create_dict["TRICKLE CHARGING"]:
-                                # dashboard.docked = True
-                                battcharging = True
-                            elif bot.sensor_state['charging state'] == create_dict["WAITING"]:
-                                battcharging = False
-                            elif bot.sensor_state['charging state'] == create_dict["CHARGE FAULT"]:
-                                battcharging = False
+                        # 7 SEGMENT DISPLAY
+                        # bot.digit_led_ascii("abcd")
+                        bot.digit_led_ascii(dashboard.mode.get()[:4].rjust(4))  # rjustify and pad to 4 chars
 
-                            if bot.sensor_state['charging sources available']['home base']:
-                                dashboard.docked = True
-                                dashboard.powersource.set('Home Base')
-                            else:
-                                dashboard.docked = False
-                                dashboard.powersource.set('Battery')
+                        dashboard.master.update()  # inner loop to update dashboard telemetry
 
-                            # DRIVE
-                            if dashboard.driven.get() == 'Button':
-                                if dashboard.driveforward == True:
-                                    bot.drive(int(dashboard.speed.get()), 32767)
-                                elif dashboard.drivebackward == True:
-                                    bot.drive(int(dashboard.speed.get()) * -1, 32767)
-                                elif dashboard.driveleft == True:
-                                    bot.drive(int(dashboard.speed.get()), 1)
-                                elif dashboard.driveright == True:
-                                    bot.drive(int(dashboard.speed.get()), -1)
-                                else:
-                                    bot.drive(0, 32767)
-                            else:
-                                if dashboard.leftbuttonclick.get() == True:
-                                    bot.drive(dashboard.commandvelocity, dashboard.commandradius)
-                                else:
-                                    bot.drive(0, 32767)
-                            if abs(bot.sensor_state['distance']) > 5: dashboard.docked = False
-
-                            dist = dist + abs(bot.sensor_state['distance'])
-
-                            # 7 SEGMENT DISPLAY
-                            # bot.digit_led_ascii("abcd")
-                            bot.digit_led_ascii(dashboard.mode.get()[:4].rjust(4))  # rjustify and pad to 4 chars
-
-                            dashboard.master.update()  # inner loop to update dashboard telemetry
-
-                    except Exception:  # , e:
-                        print "Aborting telemetry loop"
-                        # print sys.stderr, "Exception: %s" % str(e)
-                        traceback.print_exc(file=sys.stdout)
-                        break
+                except Exception:  # , e:
+                    print "Aborting telemetry loop"
+                    # print sys.stderr, "Exception: %s" % str(e)
+                    traceback.print_exc(file=sys.stdout)
+                    break
 
         dashboard.master.update()
         time.sleep(0.5)  # outer loop to handle data link retry connect attempts

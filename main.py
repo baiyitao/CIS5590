@@ -1298,12 +1298,11 @@ def change_orientation(head,goal,bot):
         bot_rotate(bot, -90)
     elif(head-goal) == -2 or 2:
         #-180
-        bot_rotate(bot, -90)
+        bot_rotate(bot, 180)
     elif(head-goal) == -1 or 3:
         #90
-        bot_rotate(bot, -90)
+        bot_rotate(bot, 90)
     elif(head-goal) == 0:
-
         pass
 
 def bot_rotate(bot, orientate):
@@ -1315,7 +1314,11 @@ def bot_rotate(bot, orientate):
         timelimit(1, bot.get_packet, (20,), {})
         angle = angle + abs(bot.sensor_state['angle'])
         time.sleep(.02)  # irobot updates sensor and internal state variables every 15ms
+    print "stop"
+    time.sleep(1)
+    bot.drive(40, 1)
     bot.drive(0, 32767)  # stop
+    time.sleep(1)
 
 def cleaning(bot):
     # args: start, room1_martix, room_info
@@ -1367,9 +1370,13 @@ def cleaning(bot):
             # move to left
             # clean the grid
             # update the coordinate of robot
+            print "turn left"
             change_orientation(head,0, bot)
             head = 0
+            print "forward"
+            bot.drive(0, 32767)
             bot.drive(100, 32767)
+            bot.drive(0, 32767)
             room_martix[robot_row][robot_col]  = -1
             robot_col = robot_col -1
 
@@ -1378,9 +1385,12 @@ def cleaning(bot):
             # move to up
             # clean the grid
             # update the coordinate of robot
+            print "turn up"
             change_orientation(head, 1,bot)
             head = 1
+            bot.drive(0, 32767)
             bot.drive(100, 32767)
+            bot.drive(0, 32767)
             room_martix[robot_row][robot_col] = -1
             robot_row =robot_row -1
 
@@ -1389,9 +1399,13 @@ def cleaning(bot):
             # move to right
             # clean the grid
             # update the coordinate of robot
+            print "turn right"
             change_orientation(head, 2,bot)
             head = 2
+            print "forward"
+            bot.drive(0, 32767)
             bot.drive(100, 32767)
+            bot.drive(0, 32767)
             room_martix[robot_row][robot_col] = -1
             robot_col =robot_col +1
 
@@ -1400,9 +1414,13 @@ def cleaning(bot):
             # move to down
             # clean the grid
             # update the coordinate of robot
+            print "turn down"
             change_orientation(head, 3,bot)
             head = 3
+            print "forward"
+            bot.drive(0, 32767)
             bot.drive(100, 32767)
+            bot.drive(0, 32767)
             room_martix[robot_row][robot_col] = -1
             robot_row = robot_row +1
 

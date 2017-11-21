@@ -129,6 +129,10 @@ class Dashboard():
             self.map_place_piece("irobot", self.irobot_posn[1], self.irobot_posn[0])
             self.map_place_piece("goal", self.goal_posn[1], self.goal_posn[0])
 
+    #baiyi
+    def on_press_room(self):
+        self.runClean = True
+
     def on_press_demo(self):
         self.rundemo = True
 
@@ -448,10 +452,12 @@ class Dashboard():
         self.tschedule = StringVar();    self.tschedule.set('07:00')
         self.dschedule = StringVar();   self.dschedule.set('Mon-Fri')
         self.exitflag = BooleanVar();   self.exitflag = False  # Exit program flag
+        self.runClean = BooleanVar();   self.runClean = False  #baiyi
+        self.roomNumber = StringVar();   self.roomNumber.set('NULL')
 
 
     def paintGUI(self):
-        self.master.geometry('980x670+20+50')
+        self.master.geometry('1080x670+20+50')
         self.master.wm_title("iRobot Navigate")
         self.master.configure(background='white')
         self.master.protocol("WM_DELETE_WINDOW", self.on_exit)
@@ -494,8 +500,7 @@ class Dashboard():
         self.btnRight.place(x=205, y=55)
         self.btnRight.bind("<ButtonPress>", self.on_press_driveright)
         self.btnRight.bind("<ButtonRelease>", self.on_press_stop)
-        self.btnDriven = ttk.Button(frame, textvariable=self.driven,
-        command = self.on_press_chgdrive, width = 6)
+        self.btnDriven = ttk.Button(frame, textvariable=self.driven, command=self.on_press_chgdrive, width=6)
         self.btnDriven.pack()
         self.btnDriven.place(x=255, y=20)
         frame.bind('<Button-1>', self.on_leftbuttonclick)
@@ -513,39 +518,15 @@ class Dashboard():
         label.pack()
         label.place(x=10, y=95)
         # buttons
-        self.btnStart = ttk.Button(frame, textvariable=self.btnwavefront,
-        command = self.on_press_start, state = DISABLED)
+        self.btnStart = ttk.Button(frame, textvariable=self.btnwavefront, command=self.on_press_start, state=DISABLED)
         self.btnStart.pack()
         self.btnStart.place(x=10, y=20)
-        button = Checkbutton(frame, text='Return to Base', variable=self.return_to_base,
-        background = 'white')
-        button.pack()
-        button.place(x=150, y=20)
-        button = ttk.Button(frame, text='Demo', command=self.on_press_demo)
+
+        button = ttk.Button(frame, text='Demo', command=self.on_press_room)
         button.pack()
         button.place(x=10, y=55)
-        button = Checkbutton(frame, text='Schedule', variable=self.schedule, background = 'white')
-        button.pack()
-        button.place(x=150, y=50)
-        # schedule time field
-        '''
-        c_date = time.strftime("%Y %m %d")
-        tme = time.asctime(time.strptime("%s %s" % (c_date, self.tschedule.get()), "%Y %m %d
-        %H:%M"))
-        self.tschedule.set(time.strftime('%H:%M',time.strptime(tme)))
-        #print tme
-        #print time.strftime('%H:%M%p')
-        #print time.strftime('%X %x %Z')
-        #print time.strftime('%H:%M',time.strptime(tme))
-        '''
-        label = Label(frame, textvariable=self.tschedule, background='white', width=5)
-        label.pack()
-        label.place(x=150, y=70)
-        label.bind("<ButtonPress>", self.on_press_inputtime)
-        label = Label(frame, textvariable=self.dschedule, background='white', width=6)
-        label.pack()
-        label.place(x=200, y=70)
-        label.bind("<ButtonPress>", self.on_press_inputtime)
+
+
 
         # frame.pack()
         frame.pack_propagate(0)  # prevents frame autofit
@@ -557,7 +538,7 @@ class Dashboard():
         self.cmbOrientation.place(x=150, y=95)
 
         # TOP RIGHT FRAME - DATA LINK
-        frame = Frame(self.master, bd=1, width=330, height=130, background='white',
+        frame = Frame(self.master, bd=1, width=310, height=130, background='white',
         relief = GROOVE)
         # labels
         Label(frame, text="DATA LINK", background='white').pack()
@@ -593,6 +574,40 @@ class Dashboard():
         # frame.pack()
         frame.pack_propagate(0)  # prevents frame autofit
         frame.place(x=640, y=10)
+
+
+
+
+        #baiyi
+        # room FRAME - DRIVE
+        frame = Frame(self.master, bd=1, width=125, height=130, background='white',
+                      relief=GROOVE)
+        # labels
+        Label(frame, text="CLean Room", background='white').pack()
+
+        # buttons
+        changeRoom = ttk.Combobox(frame, values=('A', 'B', 'C'), textvariable = self.roomNumber, width = 10)
+        changeRoom.pack()
+        changeRoom.place(x=10, y=25)
+
+
+
+
+        # button = ttk.Button(frame, text='Room A', command=self.on_press_room("A"))
+        # button.pack()
+        # button.place(x=10, y=25)
+        #
+        # button = ttk.Button(frame, text='Room B', command=self.on_press_room("B"))
+        # button.pack()
+        # button.place(x=10, y=60)
+        # frame.pack()
+        frame.pack_propagate(0)  # prevents frame autofit
+        frame.place(x=960, y=10)
+
+
+
+
+
         # BOTTOM FRAME - FLOOR MAP
         # iRobot Create 2 image
         '''
@@ -616,13 +631,13 @@ class Dashboard():
         self.img_flag.image = self.create2
         '''
         # canvas
-        canvas_width = 980
+        canvas_width = 1080
         canvas_height = 670
         self.canvas = Canvas(self.master, borderwidth=0, highlightthickness=0,
         width = canvas_width, height = canvas_height, background = "white")
         self.canvas.pack(side="top", fill="both", expand=True, padx=2, pady=2)
         self.canvas.place(x=10, y=150)
-        xsize = int((980 - 10) / self.map_columns)
+        xsize = int((1080 - 10) / self.map_columns)
         ysize = int((670 - 160) / self.map_rows)
         self.map_squaresize = min(xsize, ysize)
         colour = self.map_colour2
@@ -1272,6 +1287,133 @@ def timelimit(timeout, func, args=(), kwargs={}):
         return True
 
 
+def change_orientation(head,goal,bot):
+    # Left 0, Up 1, Right 2, Down 3
+    # 0-0 0-1 0-2 0-3:   0 -1 -2 -3
+    # 1-0,1-1 1-2 1-3:   1  0 -1 -2
+    # 2-0 2-1 2-2 2-3:   2  1  0 -1
+    # 3-0 3-1 3-2 3-3:   3  2  1  0
+    if(head-goal) == -3 or 1:
+        # -90
+        bot_rotate(bot, -90)
+    elif(head-goal) == -2 or 2:
+        #-180
+        bot_rotate(bot, -90)
+    elif(head-goal) == -1 or 3:
+        #90
+        bot_rotate(bot, -90)
+    elif(head-goal) == 0:
+
+        pass
+
+def bot_rotate(bot, orientate):
+    timelimit(1, bot.get_packet, (20,), {})  # resets angle counter
+    angle = 0
+    if orientate > 0: bot.drive(40, 1)  # anti-clockwise
+    if orientate < 0: bot.drive(40, -1)  # clockwise
+    while angle < abs(orientate):
+        timelimit(1, bot.get_packet, (20,), {})
+        angle = angle + abs(bot.sensor_state['angle'])
+        time.sleep(.02)  # irobot updates sensor and internal state variables every 15ms
+    bot.drive(0, 32767)  # stop
+
+def cleaning(bot):
+    # args: start, room1_martix, room_info
+    # this part need more modification
+    #start = room_martix[2, 0]
+    robot_y = 1
+    robot_x = 1
+
+
+
+    # fake
+    room_martix = [
+        [999,999,999,999,999,999],
+        [999,000,000,000,000,999],
+        [999,000,000,000,000,999],
+        [999,000,000,000,000,999],
+        [999,000,000,000,000,999],
+        [999,000,000,000,000,999],
+        [999,999,999,999,999,999]
+    ]
+
+    # orientation Down
+    head = 3
+    robot_row = 1
+    robot_col = 1
+
+
+
+    """
+    orientation = dashboard.orientation.get() # get the orientation
+    if orientation == "Up":
+        direct_x = x
+        direct_y = y + 1
+    elif orientation == "Left":
+        direct_x = x - 1
+        direct_y = y
+    elif orientation == "Right":
+        direct_x = x + 1
+        direct_y = y
+    elif orientation == "Down":
+        direct_x = x
+        direct_y = y - 1
+    """
+
+    while True:
+        # and irobot is not round by obstacle
+        if room_martix[robot_row][robot_col - 1] == 000:
+            # if left is 0, means a grid waiting for cleaning
+            # move to left
+            # clean the grid
+            # update the coordinate of robot
+            change_orientation(head,0, bot)
+            head = 0
+            bot.drive(100, 32767)
+            room_martix[robot_row][robot_col]  = -1
+            robot_col = robot_col -1
+
+        elif room_martix[robot_row - 1][robot_col] == 000:
+            # if up is 0
+            # move to up
+            # clean the grid
+            # update the coordinate of robot
+            change_orientation(head, 1,bot)
+            head = 1
+            bot.drive(100, 32767)
+            room_martix[robot_row][robot_col] = -1
+            robot_row =robot_row -1
+
+        elif room_martix[robot_row][robot_col + 1] == 000:
+            # if right is 0
+            # move to right
+            # clean the grid
+            # update the coordinate of robot
+            change_orientation(head, 2,bot)
+            head = 2
+            bot.drive(100, 32767)
+            room_martix[robot_row][robot_col] = -1
+            robot_col =robot_col +1
+
+        elif room_martix[robot_row + 1][robot_col] == 000:
+            # if down is 0
+            # move to down
+            # clean the grid
+            # update the coordinate of robot
+            change_orientation(head, 3,bot)
+            head = 3
+            bot.drive(100, 32767)
+            room_martix[robot_row][robot_col] = -1
+            robot_row = robot_row +1
+
+        else:
+            # the whole room is cleaned up (really?)
+            # stop the irobot
+            bot.drive(0, 32767)
+            room_martix[robot_row][robot_col] = -1
+            break
+
+
 def iRobotTelemetry(dashboard):
     create_data = """
                 {"OFF" : 0,
@@ -1376,6 +1518,11 @@ def iRobotTelemetry(dashboard):
                             schedule_day = True
                         else:
                             schedule_day = False
+
+                        if dashboard.runClean:
+                            print "running clean room " + dashboard.roomNumber.get()
+                            cleaning(bot)
+                            dashboard.runClean = False
 
                         if dashboard.rundemo:
                             print "Running Wavefront Demo"

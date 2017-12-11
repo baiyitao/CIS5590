@@ -111,6 +111,12 @@ class Dashboard():
         self.runClean = True
 
     def on_press_demo(self):
+        if self.roomNumber.get() == 'A':
+            self.goal_posn = [1,1]
+        elif self.roomNumber.get() == 'B':
+            self.goal_posn = [8, 6]
+        elif self.roomNumber.get() == 'C':
+            self.goal_posn = [16, 2]
         self.rundemo = True
 
 
@@ -223,14 +229,14 @@ class Dashboard():
 
 
         self.floormap =\
-        [[999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999],
-         [999, 254, 000, 000, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 000, 000, 999, 999],
-         [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 'b', 001, 000, 000, 000, 000, 999, 999],
-         [999, 999, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 999, 999],
-         [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 999],
-         [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 999],
-         [999, 000, 000, 000, 000, 000, 000, 'a', 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 999],
-         [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999]]
+        [[999, 999 , 999 , 999 , 999 , 999 , 999 , 999, 999 , 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999],
+         [999, 254 , '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999 , '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', 999, 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 666, '0c', '0c', '0c', '0c', '0c', 999, 999],
+         [999, 999 , '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', 999, 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999 , '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', '0c', 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', '0c', 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 666, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', '0c', 999],
+         [999, 999 , 999 , 999 , 999 , 999 , 999 , 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999]]
 
 
         self.flag_gif = '''R0lGODlhmACYAPcAAAAAAAAAMwAAZgAAmQAAzAAA/wArAAArMwArZgArmQArzAAr/wBVAABVMwBV
@@ -352,14 +358,18 @@ class Dashboard():
         label.place(x=10, y=95)
         # buttons
 
-        button = ttk.Button(frame, text='DemoMy', command=self.on_press_room)
+        button = ttk.Button(frame, text='DemoClean', command=self.on_press_room)
         button.pack()
         button.place(x=10, y=20)
 
 
-        button = ttk.Button(frame, text='Demo', command=self.on_press_demo)
+        button = ttk.Button(frame, text='DemoNav', command=self.on_press_demo)
         button.pack()
         button.place(x=10, y=55)
+
+        changeRoom = ttk.Combobox(frame, values=('A', 'B', 'C'), textvariable = self.roomNumber, width = 10)
+        changeRoom.pack()
+        changeRoom.place(x=150, y=60)
 
 
 
@@ -417,17 +427,6 @@ class Dashboard():
 
 
 
-        #baiyi
-        # room FRAME - DRIVE
-        frame = Frame(self.master, bd=1, width=125, height=130, background='white',
-                      relief=GROOVE)
-        # labels
-        Label(frame, text="CLean Room", background='white').pack()
-
-        # buttons
-        changeRoom = ttk.Combobox(frame, values=('A', 'B', 'C'), textvariable = self.roomNumber, width = 10)
-        changeRoom.pack()
-        changeRoom.place(x=10, y=25)
 
 
 
@@ -486,6 +485,18 @@ class Dashboard():
             for col in range(self.map_columns):
                 if self.floormap[row][col] == 999:
                     colour = self.map_colour2
+                    x1 = (col * self.map_squaresize)
+                    y1 = (row * self.map_squaresize)
+                    x2 = x1 + self.map_squaresize
+                    y2 = y1 + self.map_squaresize
+                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags="square")
+                elif self.floormap[row][col] == 666:
+                    colour = "red"
+                    x1 = (col * self.map_squaresize)
+                    y1 = (row * self.map_squaresize)
+                    x2 = x1 + self.map_squaresize
+                    y2 = y1 + self.map_squaresize
+                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags="square")
                 else:
                     colour = self.map_colour1
                     x1 = (col * self.map_squaresize)
@@ -493,7 +504,7 @@ class Dashboard():
                     x2 = x1 + self.map_squaresize
                     y2 = y1 + self.map_squaresize
                     self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags = "square")
-                    # resize goal and irobot images to fit into square
+                # resize goal and irobot images to fit into square
                 if self.floormap[row][col] == 001:
                     self.goal_posn = [col, row]
                     newsize = int((self.goal.width() * 1.4) / self.map_squaresize)
@@ -1338,6 +1349,9 @@ def iRobotTelemetry(dashboard):
 
             if dashboard.rundemo:
                 print "Running Wavefront Demo"
+
+
+
                 floorplan.run(dashboard, bot, return_path=False, prnt=True, demo=True)
 
                 # floorplan.run(dashboard, return_path=False, prnt=True, demo=True)

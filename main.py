@@ -130,10 +130,20 @@ class Dashboard():
             self.map_place_piece("goal", self.goal_posn[1], self.goal_posn[0])
 
     #baiyi
-    def on_press_room(self):
+    def on_press_room_demo(self):
         self.runClean = True
 
+    def on_press_room(self):
+        self.runClean = True
+        self.runCleanReal = True
+
     def on_press_demo(self):
+        if self.roomNumber.get() == 'A':
+            self.goal_posn = [1, 1]
+        elif self.roomNumber.get() == 'B':
+            self.goal_posn = [8, 6]
+        elif self.roomNumber.get() == 'C':
+            self.goal_posn = [16, 2]
         self.rundemo = True
 
     def on_press_inputtime(self, event):
@@ -268,46 +278,6 @@ class Dashboard():
         self.modeflag.set(True)
         print "OI mode change from " + self.mode.get() + " to " + self.chgmode.get()
 
-    def on_map_refresh(self, event):
-        # redraw the map, possibly in response to window being resized
-        xsize = int((event.width - 10) / self.map_columns)
-        ysize = int((event.height - 150) / self.map_rows)
-        self.map_squaresize = min(xsize, ysize)
-        self.canvas.delete("square")
-        colour = self.map_colour2
-
-        for row in range(self.map_rows):
-        # colour = self.map_colour1 if colour == self.map_colour2 else self.map_colour2
-            for col in range(self.map_columns):
-                if self.floormap[row][col] == 999:
-                    colour = self.map_colour2
-                else:
-                    colour = self.map_colour1
-                    x1 = (col * self.map_squaresize)
-                    y1 = (row * self.map_squaresize)
-                    x2 = x1 + self.map_squaresize
-                    y2 = y1 + self.map_squaresize
-                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour,tags="square")
-        # resize goal and irobot images to fit into square
-        # self.goal = self.goal.copy()
-        self.img_flag.configure(image=self.goal)
-        self.img_flag.image = self.goal  # keep a reference
-        newsize = int((self.goal.width() * 1.4) / self.map_squaresize)
-        self.img_flag.image = self.img_flag.image.subsample(newsize)
-        self.canvas.itemconfig("goal", image=self.img_flag.image)
-        # self.create2 = self.create2.copy()
-        self.img_create2.configure(image=self.create2)
-        self.img_create2.image = self.create2  # keep a reference
-        newsize = int((self.create2.width() * 1.4) / self.map_squaresize)
-        self.img_create2.image = self.img_create2.image.subsample(newsize)
-        self.canvas.itemconfig("irobot", image=self.img_create2.image)
-        for name in self.pieces:
-            self.map_place_piece(name, self.pieces[name][0], self.pieces[name][1])
-
-        self.canvas.tag_raise("piece")
-        self.canvas.tag_lower("square")
-
-        print "Resize map"
 
 
     def map_add_piece(self, name, image, row=0, column=0):
@@ -358,16 +328,23 @@ class Dashboard():
         #  [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999]]
 
 
-        self.floormap =\
-        [[999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999],
-         [999, 254, 000, 000, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 000, 000, 999, 999],
-         [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 'b', 001, 000, 000, 000, 000, 999, 999],
-         [999, 999, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 999, 999],
-         [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 999],
-         [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 999],
-         [999, 000, 000, 000, 000, 000, 000, 'a', 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 999],
-         [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999]]
-
+        self.floormap = \
+            [[999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+              999, 999],
+             [999, 254, '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999, '0b', '0b', '0b', 999, '0c', '0c',
+              '0c', '0c', '0c', 999, 999],
+             [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 666, '0c', '0c',
+              '0c', '0c', '0c', 999, 999],
+             [999, 999, '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c',
+              '0c', '0c', '0c', 999, 999],
+             [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999, '0b', '0b', '0b', 999, '0c', '0c',
+              '0c', '0c', '0c', '0c', 999],
+             [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c',
+              '0c', '0c', '0c', '0c', 999],
+             [999, '0a', '0a', '0a', '0a', '0a', '0a', 666, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c',
+              '0c', '0c', '0c', '0c', 999],
+             [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+              999, 999]]
 
         self.flag_gif = '''R0lGODlhmACYAPcAAAAAAAAAMwAAZgAAmQAAzAAA/wArAAArMwArZgArmQArzAAr/wBVAABVMwBV
         ZgBVmQBVzABV/wCAAACAMwCAZgCAmQCAzACA/wCqAACqMwCqZgCqmQCqzACq/wDVAADVMwDVZgDV
@@ -457,7 +434,9 @@ class Dashboard():
         self.dschedule = StringVar();   self.dschedule.set('Mon-Fri')
         self.exitflag = BooleanVar();   self.exitflag = False  # Exit program flag
         self.runClean = BooleanVar();   self.runClean = False  #baiyi
-        self.roomNumber = StringVar();   self.roomNumber.set('NULL')
+        self.runCleanReal = BooleanVar();   self.runCleanReal = False  # baiyi
+
+        self.roomNumber = StringVar();   self.roomNumber.set('A')
 
 
     def paintGUI(self):
@@ -513,6 +492,11 @@ class Dashboard():
         # frame.pack()
         frame.pack_propagate(0)  # prevents frame autofit
         frame.place(x=10, y=10)
+
+
+
+
+
         # MIDDLE FRAME - START / STOP
         frame = Frame(self.master, bd=1, width=280, height=130, background='white',
         relief = GROOVE)
@@ -522,14 +506,23 @@ class Dashboard():
         label.pack()
         label.place(x=10, y=95)
         # buttons
-        self.btnStart = ttk.Button(frame, textvariable=self.btnwavefront, command=self.on_press_start, state=DISABLED)
-        self.btnStart.pack()
-        self.btnStart.place(x=10, y=20)
 
-        button = ttk.Button(frame, text='Demo', command=self.on_press_room)
+        button = ttk.Button(frame, text='DemoClean', command=self.on_press_room_demo)
+        button.pack()
+        button.place(x=10, y=20)
+
+        button = ttk.Button(frame, text='RealClean', command=self.on_press_room)
+        button.pack()
+        button.place(x=150, y=20)
+
+
+        button = ttk.Button(frame, text='DemoNav', command=self.on_press_demo)
         button.pack()
         button.place(x=10, y=55)
 
+        changeRoom = ttk.Combobox(frame, values=('A', 'B', 'C'), textvariable = self.roomNumber, width = 10)
+        changeRoom.pack()
+        changeRoom.place(x=150, y=60)
 
 
         # frame.pack()
@@ -540,6 +533,9 @@ class Dashboard():
         textvariable = self.orientation, width = 10)
         self.cmbOrientation.pack()
         self.cmbOrientation.place(x=150, y=95)
+
+
+
 
         # TOP RIGHT FRAME - DATA LINK
         frame = Frame(self.master, bd=1, width=310, height=130, background='white',
@@ -582,31 +578,6 @@ class Dashboard():
 
 
 
-        #baiyi
-        # room FRAME - DRIVE
-        frame = Frame(self.master, bd=1, width=125, height=130, background='white',
-                      relief=GROOVE)
-        # labels
-        Label(frame, text="CLean Room", background='white').pack()
-
-        # buttons
-        changeRoom = ttk.Combobox(frame, values=('A', 'B', 'C'), textvariable = self.roomNumber, width = 10)
-        changeRoom.pack()
-        changeRoom.place(x=10, y=25)
-
-
-
-
-        # button = ttk.Button(frame, text='Room A', command=self.on_press_room("A"))
-        # button.pack()
-        # button.place(x=10, y=25)
-        #
-        # button = ttk.Button(frame, text='Room B', command=self.on_press_room("B"))
-        # button.pack()
-        # button.place(x=10, y=60)
-        # frame.pack()
-        frame.pack_propagate(0)  # prevents frame autofit
-        frame.place(x=960, y=10)
 
 
 
@@ -651,14 +622,26 @@ class Dashboard():
             for col in range(self.map_columns):
                 if self.floormap[row][col] == 999:
                     colour = self.map_colour2
+                    x1 = (col * self.map_squaresize)
+                    y1 = (row * self.map_squaresize)
+                    x2 = x1 + self.map_squaresize
+                    y2 = y1 + self.map_squaresize
+                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags="square")
+                elif self.floormap[row][col] == 666:
+                    colour = "red"
+                    x1 = (col * self.map_squaresize)
+                    y1 = (row * self.map_squaresize)
+                    x2 = x1 + self.map_squaresize
+                    y2 = y1 + self.map_squaresize
+                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags="square")
                 else:
                     colour = self.map_colour1
                     x1 = (col * self.map_squaresize)
                     y1 = (row * self.map_squaresize)
                     x2 = x1 + self.map_squaresize
                     y2 = y1 + self.map_squaresize
-                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags = "square")
-                    # resize goal and irobot images to fit into square
+                    self.canvas.create_rectangle(x1, y1, x2, y2, outline="black", fill=colour, tags="square")
+                # resize goal and irobot images to fit into square
                 if self.floormap[row][col] == 001:
                     self.goal_posn = [col, row]
                     newsize = int((self.goal.width() * 1.4) / self.map_squaresize)
@@ -883,6 +866,8 @@ class WavefrontMachine:
 
             # reposition irobot on map for new location
             print "Move to x=%d y=%d" % (self.__robot_col, self.__robot_row)
+
+            time.sleep(.1)
             dashboard.map_place_piece("irobot", self.__robot_row, self.__robot_col)
             dashboard.master.update()
 
@@ -1135,6 +1120,364 @@ class WavefrontMachine:
         self.resetmap(dashboard.irobot_posn, dashboard.goal_posn)
         return path
 
+    def Myrun(self, dashboard, head, bot, return_path, prnt=False, demo=True, alarm=False):
+        """
+        The entry point for the robot algorithm to use wavefront propagation.
+        """
+        dashboard.comms_check(1)  # set datalink LED to solid green
+        counter_rotate_adjustment = False  # does irobot need to counter rotate after a bump  rotation
+        rotation_angle = 0  # angle to rotate irobot after a bump
+        orientate = 0  # orientate irobot in degrees before next move  forward
+        next_move = ''  # next irobot forward move relative to map (Left, Right, Up, Down, < blank > if rotating)
+        adjacent_wall = ''  # Starboard or Port if irobot is running along a wall. < blank > if no adjacent wall.
+        current_robot_row = 0
+        current_robot_col = 0
+        later_robot_row = 0  # 2nd move ahead
+        later_robot_col = 0  # 2nd move ahead
+
+        # set irobot starting position orientation in degrees
+        if not return_path:
+            if head == 'Up':
+                self.orientation_in_degrees = 0
+            elif head == 'Right':
+                self.orientation_in_degrees = 90
+            elif head == 'Down':
+                self.orientation_in_degrees = 180
+            elif head == 'Left':
+                self.orientation_in_degrees = 270
+        print "Starting coords : x=%d y=%d" % (self.__robot_col, self.__robot_row)
+        print "Orientation : %d degrees" % self.orientation_in_degrees
+
+        # undock irobot (if docked) when not demo mode
+        if not demo:
+            if dashboard.docked and not return_path:
+                bot.digit_led_ascii(' REV')
+                print "Undocking..."
+
+                timelimit(1, bot.get_packet, (19,), {})  # resets distance counter
+                dist = 0
+                bot.drive(int(dashboard.speed.get()) * -1, 32767)  # reverse
+                while dist < (dashboard.unitsize - int(dashboard.speed.get()) / 2.5):
+                    timelimit(1, bot.get_packet, (34,), {})
+                    if bot.sensor_state['charging sources available']['home base']:
+                        dashboard.powersource.set('Home Base')
+                    else:
+                        dashboard.powersource.set('Battery')
+
+                    timelimit(1, bot.get_packet, (19,), {})
+                    dist = dist + abs(bot.sensor_state['distance'])
+                    time.sleep(.02)  # irobot updates sensor and internal state variables every 15  ms
+                bot.drive(0, 32767)  # stop
+                dist = 0
+                if dashboard.orientation.get() == 'Left':
+                    self.__robot_col += 1
+                elif dashboard.orientation.get() == 'Right':
+                    self.__robot_col += -1
+                elif dashboard.orientation.get() == 'Up':
+                    self.__robot_row += 1
+                elif dashboard.orientation.get() == 'Down':
+                    self.__robot_row += -1
+
+                # reposition irobot on map after undocking (reversing from dock)
+                dashboard.map_place_piece("irobot", self.__robot_row, self.__robot_col)
+                dashboard.master.update()
+
+        # calculate next irobot move using wavefront algorithm
+        path = []  # not utilised but holds entire path xy coordinates
+        dashboard.runwavefront = True
+        while self.__map[self.__robot_row][self.__robot_col] != self.__goal and \
+                not dashboard.exitflag and (dashboard.runwavefront or dashboard.rundemo):
+            if self.__steps > 20000:
+                print "Cannot find a path"
+                return
+
+            timelimit(1, bot.get_packet, (34,), {})
+            if bot.sensor_state['charging sources available']['home base']:
+                dashboard.powersource.set('Home Base')
+            else:
+                dashboard.powersource.set('Battery')
+
+            current_robot_row = self.__robot_row
+            current_robot_col = self.__robot_col
+
+            # determine new irobot location to move to
+            self.__new_state = self.propagateWavefront()
+            # update irobot xy varaiables
+            if self.__new_state == 1: self.__robot_row -= 1
+            if self.__new_state == 2: self.__robot_col += 1
+            if self.__new_state == 3: self.__robot_row += 1
+            if self.__new_state == 4: self.__robot_col -= 1
+
+            # determine later irobot location to move to
+            self.__new_state = self.propagateWavefront()
+            if self.__new_state == 1: later_robot_row = self.__robot_row - 1
+            if self.__new_state == 2: later_robot_col = self.__robot_col + 1
+            if self.__new_state == 3: later_robot_row = self.__robot_row + 1
+            if self.__new_state == 4: later_robot_col = self.__robot_col - 1
+            self.__map[later_robot_row][later_robot_col] = self.__nothing  # clear that space
+            self.__map[self.__goal_row][self.__goal_col] = self.__goal  # in case goal was overwritten
+
+            # reposition irobot on map for new location
+            print "Move to x=%d y=%d" % (self.__robot_col, self.__robot_row)
+
+            time.sleep(.1)
+            dashboard.map_place_piece("irobot", self.__robot_row, self.__robot_col)
+            dashboard.master.update()
+
+            # rotate irobot to correct orientation in preparation for moving to new location
+            if (self.__robot_row - current_robot_row) == 1:  # navigate down
+                orientate = self.orientation_in_degrees - 180
+                self.orientation_in_degrees = 180  # set to orientation after     move
+            elif (self.__robot_row - current_robot_row) == -1:  # navigate up
+                orientate = self.orientation_in_degrees - 0
+                self.orientation_in_degrees = 0  # set to orientation after      move
+            elif (self.__robot_col - current_robot_col) == 1:  # navigate right
+                orientate = self.orientation_in_degrees - 90
+                self.orientation_in_degrees = 90  # set to orientation after  move
+            elif (self.__robot_col - current_robot_col) == -1:  # navigate left
+                orientate = self.orientation_in_degrees - 270
+                self.orientation_in_degrees = 270  # set to orientation after    move
+            if orientate == 270: orientate = -90
+            if orientate == -270: orientate = 90
+
+            path.append((self.__robot_row, self.__robot_col, self.orientation_in_degrees))
+            # move irobot if not in demo mode
+            if not demo:
+
+                # orientate irobot before next move
+                if orientate <> 0:
+                    bot.digit_led_ascii(str(orientate)[:4].rjust(4))
+                    print "Orientating %s degrees..." % str(orientate)
+                    self.irobot_rotate(bot, int(orientate + orientate * 0.13))  # add 10% for error
+                    next_move = ''
+
+                # check for adjacent walls if driving straight ahead
+                else:
+                    # irobot moves right
+                    if (self.__robot_row == current_robot_row) and (self.__robot_col > current_robot_col):
+                        next_move = 'Right'
+                        if self.__map[self.__robot_row + 1][self.__robot_col] == 999:
+                            adjacent_wall = 'Starboard'
+                        elif self.__map[self.__robot_row - 1][self.__robot_col] == 999:
+                            adjacent_wall = 'Port'
+                        else:
+                            adjacent_wall = ''
+
+                    # irobot moves left
+                    elif (self.__robot_row == current_robot_row) and (self.__robot_col < current_robot_col):
+                        next_move = 'Left'
+                        if self.__map[self.__robot_row + 1][self.__robot_col] == 999:
+                            adjacent_wall = 'Port'
+                        elif self.__map[self.__robot_row - 1][self.__robot_col] == 999:
+                            adjacent_wall = 'Starboard'
+                        else:
+                            adjacent_wall = ''
+
+                    # irobot moves down
+                    elif (self.__robot_row > current_robot_row) and (self.__robot_col == current_robot_col):
+                        next_move = 'Down'
+                        if self.__map[self.__robot_row][self.__robot_col + 1] == 999:
+                            adjacent_wall = 'Port'
+                        elif self.__map[self.__robot_row][self.__robot_col - 1] == 999:
+                            adjacent_wall = 'Starboard'
+                        else:
+                            adjacent_wall = ''
+
+                    # irobot moves up
+                    elif (self.__robot_row < current_robot_row) and (self.__robot_col == current_robot_col):
+                        next_move = 'Up'
+                        if self.__map[self.__robot_row][self.__robot_col + 1] == 999:
+                            adjacent_wall = 'Starboard'
+                        elif self.__map[self.__robot_row][self.__robot_col - 1] == 999:
+                            adjacent_wall = 'Port'
+                        else:
+                            adjacent_wall = ''
+
+                # does irobot needs to counter rotate after a prior bump rotation
+                # or is irobot running adjacent a wall
+                if counter_rotate_adjustment:
+                    bot.digit_led_ascii(' ADJ')
+                    print "Orientation adjustment..."
+                    self.irobot_rotate(bot, int(rotation_angle * -1 / 2))  # counter rotate
+                    counter_rotate_adjustment = False
+                elif adjacent_wall == 'Port':
+                    bot.digit_led_ascii('-HUG')
+                    print "Hug left wall..."
+                    self.irobot_rotate(bot, 2)  # rotate anti-clockwise
+                elif adjacent_wall == 'Starboard':
+                    bot.digit_led_ascii('HUG-')
+                    print "Hug right wall..."
+                    self.irobot_rotate(bot, -2)  # rotate clockwise
+                # navigate irobot ahead one unit
+                bot.digit_led_ascii('FWRD')
+                print "Drive forward..."
+                timelimit(1, bot.get_packet, (19,), {})  # resets distance counter
+                dist = 0
+
+                # if bumped head on don't drive forward
+                timelimit(1, bot.get_packet, (45,), {})  # light bumper detect
+                if (bot.sensor_state['light bumper']['center right'] == True and bot.sensor_state['light bumper'][
+                    'center left'] == True):
+                    pass
+                else:
+                    # if irobot reaches goal 2 moves out and
+                    # is on a return path back to a docking station then dock
+                    if later_robot_row == self.__goal_row and later_robot_col == self.__goal_col and dashboard.docked and return_path:
+                        self.__robot_row = self.__goal_row
+                        self.__robot_col = self.__goal_col
+                        dashboard.chgmode.set('Seek Dock')
+                        dist = 1000
+                    else:
+                        bot.drive(int(dashboard.speed.get()), 32767)  # forward
+
+                while dist < (dashboard.unitsize - int(dashboard.speed.get()) / 3.5) and dashboard.runwavefront:
+                    timelimit(1, bot.get_packet, (19,), {})
+                    dist = dist + abs(bot.sensor_state['distance'])
+
+                    # detect and adjust for obstacles
+                    timelimit(1, bot.get_packet, (45,), {})  # light bumper detect
+                    timelimit(1, bot.get_packet, (7,), {})  # bumper detect
+                    # format a bump string for printing bump status
+                    b = 0
+                    if bot.sensor_state['light bumper']['right'] == True:
+                        b = b + 1
+                    if bot.sensor_state['light bumper']['front right'] == True:
+                        b = b + 2
+                    if bot.sensor_state['light bumper']['center right'] == True:
+                        b = b + 4
+                    if bot.sensor_state['light bumper']['center left'] == True:
+                        b = b + 8
+                    if bot.sensor_state['light bumper']['front left'] == True:
+                        b = b + 16
+                    if bot.sensor_state['light bumper']['left'] == True:
+                        b = b + 32
+                    bstr = format(b, '06b')
+                    bstr = bstr.replace("1", "X")
+                    bstr = bstr[:3] + "-" + bstr[3:]
+
+                    # if bumped head on
+                    if (bot.sensor_state['light bumper']['center right'] == True and bot.sensor_state['light bumper'][
+                        'center left'] == True) or (bot.sensor_state['wheel drop and bumps']['bump left'] == True and
+                                                    bot.sensor_state['wheel drop and bumps']['bump right'] == True):
+                        print "Proximity bump %s" % bstr
+                        if (bot.sensor_state['wheel drop and bumps']['bump left'] == True and
+                                bot.sensor_state['wheel drop and bumps']['bump right'] == True):
+                            print "Bumped head"
+                        bot.drive(0, 32767)  # always stop if bumped head on
+                        dist = 1000  # exit while to stop irobot moving forward
+
+                        # if previous move was an orientation (turn) then back out and move forward to try again
+                        if orientate <> 0:
+                            bot.digit_led_ascii('BACK')
+                            print "Reversing move and re-orientating %s degrees..." % str(orientate * -1)
+                            self.irobot_rotate(bot, int((orientate + orientate * 0.1) * -1))  # add 10 % for error
+                            self.__robot_row, self.__robot_col, self.orientation_in_degrees = path.pop()
+                            self.__map[self.__robot_row][self.__robot_col] = self.__nothing
+                            # clear that space
+
+                            self.__robot_row, self.__robot_col, self.orientation_in_degrees = path.pop()
+                            self.__map[self.__robot_row][self.__robot_col] = self.__nothing
+                            # clear that space
+
+                            self.__robot_row, self.__robot_col, self.orientation_in_degrees = path[len(path) - 1]
+                            print "Probable position : x=%d y=%d" % (self.__robot_col, self.__robot_row)
+                            dashboard.map_place_piece("irobot", self.__robot_row, self.__robot_col)
+                            dashboard.master.update()
+                        else:
+                            # determine if next irobot movement is a turn,
+                            # if so loop returns to calculate next move, else abort
+                            # irobot is still travelling in straight line and therefore has no  idea where to go
+                            if (later_robot_row - self.__robot_row) == 1:  # navigate down
+                                if (self.orientation_in_degrees - 180) == 0:
+                                    bot.digit_led_ascii('STOP')
+                                    print "Cannot determine path... Stopping."
+                                    dashboard.runwavefront = False
+                            elif (later_robot_row - self.__robot_row) == -1:  # navigate up
+                                if (self.orientation_in_degrees - 0) == 0:
+                                    bot.digit_led_ascii('STOP')
+                                    print "Cannot determine path... Stopping."
+                                    dashboard.runwavefront = False
+                            elif (later_robot_col - self.__robot_col) == 1:  # navigate right
+                                if (self.orientation_in_degrees - 90) == 0:
+                                    bot.digit_led_ascii('STOP')
+                                    print "Cannot determine path... Stopping."
+                                    dashboard.runwavefront = False
+                            elif (later_robot_col - self.__robot_col) == -1:  # navigate left
+                                if (self.orientation_in_degrees - 270) == 0:
+                                    bot.digit_led_ascii('STOP')
+                                    print "Cannot determine path... Stopping."
+                                    dashboard.runwavefront = False
+
+                    # if light bumper sensors trigger with an adjacent wall (prevent head on triggers)
+                    elif (bot.sensor_state['light bumper']['right'] == True or bot.sensor_state['light bumper'][
+                        'front right'] == True) and adjacent_wall <> "":
+                        bot.digit_led_ascii('BUMP')
+                        print "Proximity bump %s" % bstr
+                        bot.drive(0, 32767)  # stop
+                        rotation_angle = 5
+                        self.irobot_rotate(bot, rotation_angle)  # rotate anti-clockwise
+                        bot.digit_led_ascii('FWRD')
+                        bot.drive(int(dashboard.speed.get()), 32767)  # forward
+                        counter_rotate_adjustment = True
+
+                    elif (bot.sensor_state['light bumper']['front left'] == True or bot.sensor_state['light bumper'][
+                        'left'] == True) and adjacent_wall <> "":
+                        bot.digit_led_ascii('BUMP')
+                        print "Proximity bump %s" % bstr
+                        bot.drive(0, 32767)  # stop
+                        rotation_angle = -5
+                        self.irobot_rotate(bot, rotation_angle)  # rotate clockwise
+                        bot.digit_led_ascii('FWRD')
+                        bot.drive(int(dashboard.speed.get()), 32767)  # forward
+                        counter_rotate_adjustment = True
+
+                    # if outside bump sensors trigger
+                    elif bot.sensor_state['wheel drop and bumps']['bump left'] == True:
+                        bot.digit_led_ascii('BUMP')
+                        print "Bump left..."
+                        bot.drive(0, 32767)  # stop
+                        rotation_angle = -12
+                        self.irobot_rotate(bot, rotation_angle)  # rotate clockwise
+                        bot.digit_led_ascii('FWRD')
+                        bot.drive(int(dashboard.speed.get()), 32767)  # forward
+                        counter_rotate_adjustment = True
+
+                    elif bot.sensor_state['wheel drop and bumps']['bump right'] == True:
+                        bot.digit_led_ascii('BUMP')
+                        print "Bump right..."
+                        bot.drive(0, 32767)  # stop
+                        rotation_angle = 12
+                        self.irobot_rotate(bot, rotation_angle)  # rotate anti-clockwise
+                        bot.digit_led_ascii('FWRD')
+                        bot.drive(int(dashboard.speed.get()), 32767)  # forward
+                        counter_rotate_adjustment = True
+
+                    time.sleep(.02)  # irobot updates sensor and internal state variables every 15 ms
+                    timelimit(1, bot.get_packet, (35,), {})  # oi mode
+                    if bot.sensor_state['oi mode'] == 1:  # if tripped into Passive mode
+                        dashboard.runwavefront = False
+
+                bot.drive(0, 32767)  # stop # can this command be excluded??
+                dist = 0
+
+        if dashboard.runwavefront or dashboard.rundemo:
+            msg = "Found the goal in %i steps:" % self.__steps
+            # msg += "Map size= %i %i\n" % (self.__height, self.__width)
+            print msg
+            if prnt: self.printMap()
+
+        if dashboard.runwavefront:
+            bot.play_song(0, 'A4,40,A4,40,A4,40,F4,30,C5,10,A4,40,F4,30,C5,10,A4,80')
+            if alarm:
+                # bot.play_song(0, 'C5,5,C5,10,C5,5,C5,10,C5,5,C5,10,C5,5,C5,10,C5,5,C5,10,C5,5,C5,10,G5,5,E5,10,G5, 5, E5, 10, G5, 5, E5, 10, C5, 5, C5, 10, C5, 5, C5, 10, C5, 5, C5, 10, C5, 5, C5, 10, C5, 5, C5, 10, C5, 5, C5, 10, G5, 5, E5, 10, G5, 5, E5, 10, G5, 5, E5, 10, C5, 45')
+                if alarm: bot.play_test_sound()
+                # bot.play_song(0,'B6,5,rest,6,A6,5,rest,7,G6,5,rest,8,F6,5,rest,9,E6,5,rest,10,D6,5,rest,11,C6, 5, rest, 12, B6, 5, rest, 13, A6, 5, rest, 14, B5, 5, rest, 15, A5, 5, rest, 16, G5, 5, rest, 17, F5, 5, rest, 18, E5, 5,rest, 19, D5, 5, rest, 20, C5, 5, rest, 21, B5, 5, rest, 22, A5, 5, rest, 23, B4, 5, rest, 24, A4, 5, rest, 25, G4, 5, rest, 26, F4, 5, rest, 27, E4, 5, rest, 28, D4, 5, rest, 29, C4, 5')
+        elif not dashboard.rundemo:
+            print "Aborting Wavefront"
+            bot.play_song(0, 'G3,16,C3,32')
+
+        self.resetmap(dashboard.irobot_posn, dashboard.goal_posn)
+        return path
 
     def propagateWavefront(self, prnt=False):
         """
@@ -1303,14 +1646,15 @@ def change_orientation(head,goal,bot):
 
     result = head - goal
 
+
     if result == -3 or result == 1:
-        bot_rotate(bot, -90)
+        bot_rotate(bot, (-90-90*0.13) )
     elif result == -2 or result == 2:
         #-180
-        bot_rotate(bot, 180)
+        bot_rotate(bot, (180+180*0.13))
     elif result == -1 or result == 3:
         #90
-        bot_rotate(bot, 90)
+        bot_rotate(bot, (90+90*0.13))
     elif result == 0:
         pass
 
@@ -1321,151 +1665,328 @@ def bot_rotate(bot, orientate):
     angle = 0
     if orientate > 0: bot.drive(40, -1)  # anti-clockwise
     if orientate < 0: bot.drive(40, 1)  # clockwise
-    while angle < abs(orientate ) + 10:
+    while angle < abs(orientate ):
         timelimit(1, bot.get_packet, (20,), {})
         angle = angle + abs(bot.sensor_state['angle'])
         time.sleep(.02)  # irobot updates sensor and internal state variables every 15ms
-        print angle
+
     print "stop"
 
 
     bot.drive(0, 32767)  # stop
 
 
-def cleaning(bot):
-    # args: start, room1_martix, room_info
-    # this part need more modification
-    #start = room_martix[2, 0]
-    robot_y = 1
-    robot_x = 1
+def cleaning(bot,roomName,dashboard,real):
+
+    breakloop = 0;
 
 
-
-    # fake
     room_martix = [
-        [999,999,999,999,999,999,999],
-        [999,000,000,000,000,999,999],
-        [999,000,000,000,000,000,999],
-        [999,000,000,000,000,000,999],
-        [999,000,000,000,000,999,000],
-        [999,000,000,000,000,'aaa',000],
-        [999,999,999,999,999,999,000]
-    ]
+        [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+         999],
+        [999, 254, '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999, '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', 999, 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 666, '0c', '0c', '0c',
+         '0c', '0c', 999, 999],
+        [999, 999, '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', 999, 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999, '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', '0c', 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', '0c', 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 666, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', '0c', 999],
+        [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+         999]]
+
+    Wave_martix = [
+        [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+         999],
+        [999, 254, '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999, '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', 999, 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 666, '0c', '0c', '0c',
+         '0c', '0c', 999, 999],
+        [999, 999, '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', 999, 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999, '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', '0c', 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', '0c', 999],
+        [999, '0a', '0a', '0a', '0a', '0a', '0a', 666, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c',
+         '0c', '0c', '0c', 999],
+        [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+         999]]
 
     # orientation Down
     head = 3
     robot_row = 1
     robot_col = 1
 
+    roomBlock = ''
+    keepGoing = 'no'
 
+    if roomName == 'A':
+        roomBlock = '0a'
+        head = 3
+        robot_row = 1
+        robot_col = 1
+        goal_pos = [robot_col, robot_row]
+    elif roomName == 'B':
+        roomBlock = '0b'
+        head = 2
+        robot_row = 6
+        robot_col = 8
+        goal_pos = [robot_col, robot_row]
+    elif roomName == 'C':
+        roomBlock = '0c'
+        head = 2
+        robot_row = 2
+        robot_col = 17
+        goal_pos = [robot_col, robot_row]
+    else:
+        roomBlock = ''
 
-    """
-    orientation = dashboard.orientation.get() # get the orientation
-    if orientation == "Up":
-        direct_x = x
-        direct_y = y + 1
-    elif orientation == "Left":
-        direct_x = x - 1
-        direct_y = y
-    elif orientation == "Right":
-        direct_x = x + 1
-        direct_y = y
-    elif orientation == "Down":
-        direct_x = x
-        direct_y = y - 1
-    """
+    robot_pos = [1,1]
+    if roomName != 'A':
+        navi_to_room = WavefrontMachine(Wave_martix, robot_pos, goal_pos, False)
+        navi_to_room.Myrun(dashboard, 'Down', bot, return_path=False, prnt=True, demo=False, alarm=False)
 
     while True:
+        dist = 0
         # and irobot is not round by obstacle
-        if room_martix[robot_row][robot_col - 1] == 000:
+        # move to left
+        if room_martix[robot_row][robot_col - 1] != 999 and room_martix[robot_row][robot_col - 1] != -1 and \
+                room_martix[robot_row][robot_col - 1] != 666:
             # if left is 0, means a grid waiting for cleaning
             # move to left
             # clean the grid
             # update the coordinate of robot
             print "turn left"
-            print "head: " +str(head)
-            # change_orientation(head,0, bot)
+            print "head: " + str(head)
+            if real:
+                change_orientation(head,0, bot)
             head = 0
             print "forward"
 
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
-            room_martix[robot_row][robot_col]  = -1
-            robot_col = robot_col -1
-            print_max(room_martix)
+            if real:
+                dist = run_one_unit(bot)
 
-        elif room_martix[robot_row - 1][robot_col] == 000:
+            if dist != 0:
+                go_back(dist, bot)
+                room_martix[robot_row][robot_col - 1] = 999
+            else:
+                room_martix[robot_row][robot_col] = -1
+                robot_col = robot_col - 1
+
+                dashboard.map_place_piece("irobot", robot_row, robot_col)
+                dashboard.master.update()
+
+            print_max(room_martix)
+        # move to up
+        elif room_martix[robot_row - 1][robot_col] != 999 and room_martix[robot_row - 1][robot_col] != -1 and \
+                room_martix[robot_row - 1][robot_col] != 666:
             # if up is 0
             # move to up
             # clean the grid
             # update the coordinate of robot
             print "turn up"
             print "head: " + str(head)
-            # change_orientation(head, 1,bot)
+            if real:
+                change_orientation(head,1, bot)
             head = 1
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
-            room_martix[robot_row][robot_col] = -1
-            robot_row =robot_row -1
-            print_max(room_martix)
 
-        elif room_martix[robot_row][robot_col + 1] == 000:
+            if real:
+                dist = run_one_unit(bot)
+
+            if dist != 0:
+                go_back(dist, bot)
+                room_martix[robot_row - 1][robot_col] = 999
+            else:
+                room_martix[robot_row][robot_col] = -1
+                robot_row = robot_row - 1
+
+                dashboard.map_place_piece("irobot", robot_row, robot_col)
+                dashboard.master.update()
+
+            print_max(room_martix)
+        # move to right
+        elif room_martix[robot_row][robot_col + 1] != 999 and room_martix[robot_row][robot_col + 1] != -1 and \
+                room_martix[robot_row][robot_col + 1] != 666:
             # if right is 0
             # move to right
             # clean the grid
             # update the coordinate of robot
             print "turn right"
             print "head: " + str(head)
-            # change_orientation(head, 2,bot)
+            if real:
+                change_orientation(head,2, bot)
             head = 2
             print "forward"
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
-            room_martix[robot_row][robot_col] = -1
-            robot_col =robot_col +1
-            print_max(room_martix)
 
-        elif room_martix[robot_row + 1][robot_col] == 000:
+            if real:
+                dist = run_one_unit(bot)
+
+            if dist != 0:
+                go_back(dist, bot)
+                room_martix[robot_row][robot_col + 1] = 999
+            else:
+                room_martix[robot_row][robot_col] = -1
+                robot_col = robot_col + 1
+
+                dashboard.map_place_piece("irobot", robot_row, robot_col)
+                dashboard.master.update()
+
+            print_max(room_martix)
+        # move to down
+        elif room_martix[robot_row + 1][robot_col] != 999 and room_martix[robot_row + 1][robot_col] != -1 and \
+                room_martix[robot_row + 1][robot_col] != 666:
             # if down is 0
             # move to down
             # clean the grid
             # update the coordinate of robot
             print "turn down"
             print "head: " + str(head)
-            # change_orientation(head, 3,bot)
+            if real:
+                change_orientation(head,3, bot)
             head = 3
             print "forward"
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
-            room_martix[robot_row][robot_col] = -1
-            robot_row = robot_row +1
+
+            if real:
+                dist = run_one_unit(bot)
+
+            if dist != 0:
+                go_back(dist, bot)
+                room_martix[robot_row + 1][robot_col] = 999
+            else:
+                room_martix[robot_row][robot_col] = -1
+                robot_row = robot_row + 1
+
+                dashboard.map_place_piece("irobot", robot_row, robot_col)
+                dashboard.master.update()
+
             print_max(room_martix)
 
         else:
-            # the whole room is cleaned up (really?)
-            # stop the irobot
-            print "done"
-            # bot.drive(0, 32767)
             room_martix[robot_row][robot_col] = -1
-            print_max(room_martix)
-            break
+            robot_pos = [robot_col,robot_row]
+            # the whole room is cleaned up (really?)
+            # check
+
+            for y in range(0, 8):
+                for x in range(0, 23):
+                    if room_martix[y][x] == roomBlock:
+                        # navigate to xy, then change robot loction
+                        breakloop = 1
+
+                        robot_row = y
+                        robot_col = x
+                        keepGoing = 'yes'
 
 
+                        print "go to x = %s, y = %s" % (robot_col ,robot_row)
+
+                        goal_pos = [robot_col,robot_row]
+
+                        print "run wave front, from %s to %s" % (robot_pos, goal_pos)
+
+                        if head == 0:
+                            ori = 'Left'
+                        elif head == 1:
+                            ori ='Up'
+                        elif head == 2:
+                            ori = 'Right'
+                        elif head == 3:
+                            ori = 'Down'
+
+                        navi = WavefrontMachine(Wave_martix, robot_pos, goal_pos, False)
+                        navi.Myrun(dashboard, ori, bot, return_path=False, prnt=True,demo=False, alarm=False)
+
+                        dashboard.map_place_piece("irobot", robot_row, robot_col)
+                        dashboard.master.update()
+                        break
+
+                if breakloop == 1:
+                    breakloop = 0
+                    break
+
+            print keepGoing
+            if keepGoing == 'yes':
+                keepGoing = 'no'
+            else:
+                # stop the irobot
+                print "done"
+                # bot.drive(0, 32767)
+
+                print_max(room_martix)
+                break
+        time.sleep(0.2)
+
+
+def run_one_unit(bot):
+    dist = 0
+    bot.drive(100, 32767)
+    while dist < (347 - 100 / 3.5):
+        timelimit(1, bot.get_packet, (19,), {})
+        dist = dist + abs(bot.sensor_state['distance'])
+
+        # detect and adjust for obstacles
+        timelimit(1, bot.get_packet, (45,), {})  # light bumper detect
+        timelimit(1, bot.get_packet, (7,), {})  # bumper detect
+        # format a bump string for printing bump status
+        b = 0
+        if bot.sensor_state['light bumper']['right'] == True:
+            b = b + 1
+        if bot.sensor_state['light bumper']['front right'] == True:
+            b = b + 2
+        if bot.sensor_state['light bumper']['center right'] == True:
+            b = b + 4
+        if bot.sensor_state['light bumper']['center left'] == True:
+            b = b + 8
+        if bot.sensor_state['light bumper']['front left'] == True:
+            b = b + 16
+        if bot.sensor_state['light bumper']['left'] == True:
+            b = b + 32
+        bstr = format(b, '06b')
+        bstr = bstr.replace("1", "X")
+        bstr = bstr[:3] + "-" + bstr[3:]
+
+        # if bumped head on
+        if (bot.sensor_state['light bumper']['center right'] == True and bot.sensor_state['light bumper'][
+            'center left'] == True) or (bot.sensor_state['wheel drop and bumps']['bump left'] == True and
+                                                bot.sensor_state['wheel drop and bumps']['bump right'] == True):
+            print "Proximity bump %s" % bstr
+            if (bot.sensor_state['wheel drop and bumps']['bump left'] == True and
+                        bot.sensor_state['wheel drop and bumps']['bump right'] == True):
+                print "Bumped head"
+                bot.drive(0, 32767)  # always stop if bumped head on
+                return dist
+            else:
+                print "need to move left or right up or down"
+                bot.drive(0, 32767)  # always stop if bumped head on
+                return dist
+
+        time.sleep(.02)  # irobot updates sensor and internal state variables every 15 ms
+
+    bot.drive(0, 32767)  # stop # can this command be excluded??
+    dist = 0
+    return dist
+
+
+def go_back(x, bot):
+    dist = 0
+    bot.drive(-50, 32767)
+    while dist < (x):
+        timelimit(1, bot.get_packet, (19,), {})
+        dist = dist + abs(bot.sensor_state['distance'])
+
+    bot.drive(0, 32767)  # stop # can this command be excluded??
 
 def print_max(maxt):
 
     msg = ''
-    for temp_B in range(0, 7):
-        for temp_A in range(0, 7):
-            if maxt[temp_B][temp_A] == 000:
+    for temp_B in range(0, 8):
+        for temp_A in range(0, 23):
+            if maxt[temp_B][temp_A] == 999:
                 msg += "%04s" % "[#]"
             # elif room_martix.__map[temp_B][temp_A] == room_martix.__robot:
             #     msg += "%04s" % "-"
@@ -1476,7 +1997,6 @@ def print_max(maxt):
         msg += "\n\n"
     msg += "\n\n"
     print msg
-
 
 def iRobotTelemetry(dashboard):
     create_data = """
@@ -1518,12 +2038,7 @@ def iRobotTelemetry(dashboard):
             if dashboard.rundemo:
                 print "Running Wavefront Demo"
                 floorplan.run(dashboard, bot, return_path=False, prnt=True, demo=True)
-                if dashboard.return_to_base.get() == True:
-                    print 'Reversing path'
-                    floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)  # swap irobot and goal locations
-                    dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
-                    dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
-                    floorplan.run(dashboard, bot, return_path=True, prnt=True, demo=True)
+
                 dashboard.rundemo = False
                 dashboard.map_place_piece("irobot", dashboard.irobot_posn[1],dashboard.irobot_posn[0])
                 dashboard.map_place_piece("goal", dashboard.goal_posn[1],dashboard.goal_posn[0])
@@ -1542,7 +2057,7 @@ def iRobotTelemetry(dashboard):
 
                 try:
                     # this binding will cause a map refresh if the user interactively changes the window size
-                    dashboard.master.bind('<Configure>', dashboard.on_map_refresh)
+                    # dashboard.master.bind('<Configure>', dashboard.on_map_refresh)
                     floorplan = WavefrontMachine(dashboard.floormap, dashboard.irobot_posn, dashboard.goal_posn, False)
                     # check if serial is communicating
                     time.sleep(0.25)
@@ -1584,20 +2099,18 @@ def iRobotTelemetry(dashboard):
                             schedule_day = False
 
                         if dashboard.runClean:
-                            print "running clean room " + dashboard.roomNumber.get()
-                            cleaning(bot)
+                            roomNumber = dashboard.roomNumber.get()
+                            print "running clean room " + roomNumber
+                            floorplan = WavefrontMachine(dashboard.floormap, dashboard.irobot_posn, dashboard.goal_posn,
+                                                         False)
+                            cleaning(bot, roomNumber,dashboard, dashboard.runCleanReal)
                             dashboard.runClean = False
+                            dashboard.runwavefront = False
 
                         if dashboard.rundemo:
                             print "Running Wavefront Demo"
                             floorplan.run(dashboard, bot, return_path=False, prnt=True,demo=True)
-                            if dashboard.return_to_base.get() == True:
-                                print 'Reversing path'
-                                floorplan.resetmap(dashboard.goal_posn, dashboard.irobot_posn)
-                                # swap irobot and goal locations
-                                dashboard.map_place_piece("irobot", dashboard.goal_posn[1], dashboard.goal_posn[0])
-                                dashboard.map_place_piece("goal", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
-                                floorplan.run(dashboard, bot, return_path=True, prnt=True, demo=True)
+
                             dashboard.rundemo = False
                             dashboard.map_place_piece("irobot", dashboard.irobot_posn[1], dashboard.irobot_posn[0])
                             dashboard.map_place_piece("goal", dashboard.goal_posn[1], dashboard.goal_posn[0])
@@ -1661,10 +2174,7 @@ def iRobotTelemetry(dashboard):
                         # print 'BRC pin pulse 2'
 
 
-                        if bot.sensor_state['oi mode'] == create_dict["PASSIVE"]:
-                            dashboard.btnStart.configure(state=DISABLED)
-                        else:
-                            dashboard.btnStart.configure(state=NORMAL)
+
 
                         # print 'BRC pin pulse 3'
                         if dashboard.modeflag.get() == True:

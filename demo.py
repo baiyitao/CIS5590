@@ -327,7 +327,7 @@ class Dashboard():
 
         self.exitflag = BooleanVar();   self.exitflag = False  # Exit program flag
         self.runClean = BooleanVar();   self.runClean = False  #baiyi
-        self.roomNumber = StringVar();   self.roomNumber.set('NULL')
+        self.roomNumber = StringVar();   self.roomNumber.set('A')
 
 
     def paintGUI(self):
@@ -1147,42 +1147,16 @@ def bot_rotate(bot, orientate):
     bot.drive(0, 32767)  # stop
 
 
-def cleaning(bot):
-    # args: start, room1_martix, room_info
-    # this part need more modification
-    #start = room_martix[2, 0]
-    robot_y = 1
-    robot_x = 1
+def cleaning(bot,roomName):
 
-
-
-    # fake
-    # room_martix = [
-    #     [999,999,999,999,999,999,999],
-    #     [999,000,000,000,000,999,999],
-    #     [999,000,000,000,000,000,999],
-    #     [999,000,000,000,000,000,999],
-    #     [999,000,000,000,000,999,000],
-    #     [999,000,000,000,000,'aaa',000],
-    #     [999,999,999,999,999,999,000]
-    # ]
-
-    room_martix = [[999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
-      999],
-     [999, 254, 000, 000, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 000, 000, 999,
-      999],
-     [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 'b', 001, 000, 000, 000, 000, 999,
-      999],
-     [999, 999, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 999,
-      999],
-     [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000,
-      999],
-     [999, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000,
-      999],
-     [999, 000, 000, 000, 000, 000, 000, 'a', 000, 000, 000, 000, 000, 000, 000, 999, 000, 000, 000, 000, 000, 000,
-      999],
-     [999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
-      999]]
+    room_martix = [[999, 999 , 999 , 999 , 999 , 999 , 999 , 999, 999 , 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999],
+         [999, 254 , '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999 , '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', 999, 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 666, '0c', '0c', '0c', '0c', '0c', 999, 999],
+         [999, 999 , '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', 999, 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', 999 , '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', '0c', 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 999, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', '0c', 999],
+         [999, '0a', '0a', '0a', '0a', '0a', '0a', 666, '0b', '0b', '0b', '0b', '0b', '0b', '0b', 999, '0c', '0c', '0c', '0c', '0c', '0c', 999],
+         [999, 999 , 999 , 999 , 999 , 999 , 999 , 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999]]
 
     # orientation Down
     head = 3
@@ -1191,25 +1165,33 @@ def cleaning(bot):
 
 
 
-    """
-    orientation = dashboard.orientation.get() # get the orientation
-    if orientation == "Up":
-        direct_x = x
-        direct_y = y + 1
-    elif orientation == "Left":
-        direct_x = x - 1
-        direct_y = y
-    elif orientation == "Right":
-        direct_x = x + 1
-        direct_y = y
-    elif orientation == "Down":
-        direct_x = x
-        direct_y = y - 1
-    """
+
+    roomBlock = ''
+    keepGoing = 'no'
+
+
+    if roomName == 'A':
+        roomBlock = '0a'
+        head = 3
+        robot_row = 1
+        robot_col = 1
+    elif roomName == 'B':
+        roomBlock = '0b'
+        head = 2
+        robot_row = 6
+        robot_col = 8
+    elif roomName == 'C':
+        roomBlock = '0c'
+        head = 2
+        robot_row = 2
+        robot_col = 17
+    else:
+        roomBlock = ''
 
     while True:
         # and irobot is not round by obstacle
-        if room_martix[robot_row][robot_col - 1] == 000:
+        # move to left
+        if room_martix[robot_row][robot_col - 1] != 999 and room_martix[robot_row][robot_col - 1] != -1 and room_martix[robot_row][robot_col - 1] != 666:
             # if left is 0, means a grid waiting for cleaning
             # move to left
             # clean the grid
@@ -1220,15 +1202,13 @@ def cleaning(bot):
             head = 0
             print "forward"
 
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
+            # run_one_unit(bot)
+
             room_martix[robot_row][robot_col]  = -1
             robot_col = robot_col -1
             print_max(room_martix)
-
-        elif room_martix[robot_row - 1][robot_col] == 000:
+        # move to up
+        elif room_martix[robot_row - 1][robot_col] != 999 and room_martix[robot_row - 1][robot_col] != -1 and room_martix[robot_row - 1][robot_col] != 666:
             # if up is 0
             # move to up
             # clean the grid
@@ -1237,15 +1217,14 @@ def cleaning(bot):
             print "head: " + str(head)
             # change_orientation(head, 1,bot)
             head = 1
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
+
+            # run_one_unit(bot)
+
             room_martix[robot_row][robot_col] = -1
             robot_row =robot_row -1
             print_max(room_martix)
-
-        elif room_martix[robot_row][robot_col + 1] == 000:
+        # move to right
+        elif room_martix[robot_row][robot_col + 1] != 999 and room_martix[robot_row][robot_col + 1] != -1 and room_martix[robot_row][robot_col + 1] != 666:
             # if right is 0
             # move to right
             # clean the grid
@@ -1255,15 +1234,14 @@ def cleaning(bot):
             # change_orientation(head, 2,bot)
             head = 2
             print "forward"
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
+
+            # run_one_unit(bot)
+
             room_martix[robot_row][robot_col] = -1
             robot_col =robot_col +1
             print_max(room_martix)
-
-        elif room_martix[robot_row + 1][robot_col] == 000:
+        # move to down
+        elif room_martix[robot_row + 1][robot_col] != 999 and room_martix[robot_row + 1][robot_col] != -1 and room_martix[robot_row + 1][robot_col] != 666:
             # if down is 0
             # move to down
             # clean the grid
@@ -1273,31 +1251,91 @@ def cleaning(bot):
             # change_orientation(head, 3,bot)
             head = 3
             print "forward"
-            # bot.drive(100, 32767)
-            # time.sleep(3)
-            # bot.drive(0, 32767)
-            # time.sleep(1)
+
+            # run_one_unit(bot)
+
             room_martix[robot_row][robot_col] = -1
             robot_row = robot_row +1
             print_max(room_martix)
 
         else:
-            # the whole room is cleaned up (really?)
-            # stop the irobot
-            print "done"
-            # bot.drive(0, 32767)
             room_martix[robot_row][robot_col] = -1
-            print_max(room_martix)
-            break
+            # the whole room is cleaned up (really?)
+            #check
 
+            for y in range(0, 8):
+                for x in range(0, 23):
+                    if room_martix[y][x] == roomBlock:
+                        #navigate to xy, then change robot loction
+                        robot_row = y
+                        robot_col = x
+                        keepGoing = 'yes'
+                        print robot_row
+                        print robot_col
+                        break
 
+            print keepGoing
+            if keepGoing == 'yes':
+                keepGoing = 'no'
+            else:
+                # stop the irobot
+                print "done"
+                # bot.drive(0, 32767)
+
+                print_max(room_martix)
+                break
+
+def run_one_unit(bot):
+    dist = 0
+    while dist < (347 - 100 / 3.5):
+        timelimit(1, bot.get_packet, (19,), {})
+        dist = dist + abs(bot.sensor_state['distance'])
+
+        # detect and adjust for obstacles
+        timelimit(1, bot.get_packet, (45,), {})  # light bumper detect
+        timelimit(1, bot.get_packet, (7,), {})  # bumper detect
+        # format a bump string for printing bump status
+        b = 0
+        if bot.sensor_state['light bumper']['right'] == True:
+            b = b + 1
+        if bot.sensor_state['light bumper']['front right'] == True:
+            b = b + 2
+        if bot.sensor_state['light bumper']['center right'] == True:
+            b = b + 4
+        if bot.sensor_state['light bumper']['center left'] == True:
+            b = b + 8
+        if bot.sensor_state['light bumper']['front left'] == True:
+            b = b + 16
+        if bot.sensor_state['light bumper']['left'] == True:
+            b = b + 32
+        bstr = format(b, '06b')
+        bstr = bstr.replace("1", "X")
+        bstr = bstr[:3] + "-" + bstr[3:]
+
+        # if bumped head on
+        if (bot.sensor_state['light bumper']['center right'] == True and bot.sensor_state['light bumper'][
+            'center left'] == True) or (bot.sensor_state['wheel drop and bumps']['bump left'] == True and
+                                                bot.sensor_state['wheel drop and bumps']['bump right'] == True):
+            print "Proximity bump %s" % bstr
+            if (bot.sensor_state['wheel drop and bumps']['bump left'] == True and
+                        bot.sensor_state['wheel drop and bumps']['bump right'] == True):
+                print "Bumped head"
+                bot.drive(0, 32767)  # always stop if bumped head on
+            else:
+                print "need to move left or right up or down"
+                bot.drive(0, 32767)  # always stop if bumped head on
+
+        time.sleep(.02)  # irobot updates sensor and internal state variables every 15 ms
+
+    bot.drive(0, 32767)  # stop # can this command be excluded??
+    dist = 0
 
 def print_max(maxt):
 
     msg = ''
     for temp_B in range(0, 8):
         for temp_A in range(0, 23):
-            if maxt[temp_B][temp_A] == 000:
+            if maxt[temp_B][temp_A] == 999:
                 msg += "%04s" % "[#]"
             # elif room_martix.__map[temp_B][temp_A] == room_martix.__robot:
             #     msg += "%04s" % "-"
@@ -1399,8 +1437,9 @@ def iRobotTelemetry(dashboard):
 
 
                     if dashboard.runClean:
-                        print "running clean room " + dashboard.roomNumber.get()
-                        cleaning(bot)
+                        roomNumber = dashboard.roomNumber.get()
+                        print "running clean room " + roomNumber
+                        cleaning(bot, roomNumber)
                         dashboard.runClean = False
 
                     if dashboard.rundemo:
